@@ -45,18 +45,21 @@ class HookRegistry {
 			'callback' => function() use ($funcName) {
 				call_user_func_array($funcName, func_get_args());
 			},
-			'priority' => $priority
+			'priority' => $priority,
+			'hookName' => $hookName,
+			'funcName' => $funcName,
+			'type' => 'function'
 		];
 
 		return add_action($hookName, $this->callbacks[$id]['callback'], $priority);
 	}
 
-	public function addWithMethod($hookName, $classname, $methodName, $priority = 10, ?string $id = null)
+	public function addWithMethod($hookName, $className, $methodName, int $priority = 10, ?string $id = null)
 	{
-		$id = $id ?? "$hookName-method-$classname-$methodName-$priority";
+		$id = $id ?? "$hookName-method-$className-$methodName-$priority";
 		$this->callbacks[$id] = [
-			'callback' => function() use($classname, $methodName) {
-				$class_instance = $this->container->get( $classname );
+			'callback' => function() use($className, $methodName) {
+				$class_instance = $this->container->get( $className );
 
 				$args = func_get_args();
 				$closure = function() use ($methodName, $args) {
@@ -65,13 +68,17 @@ class HookRegistry {
 
 				$closure->call($class_instance);
 			},
-			'priority' => $priority
+			'priority' => $priority,
+			'hookName' => $hookName,
+			'className' => $className,
+			'methodName' => $methodName,
+			'type' => 'method'
 		];
 
 		return add_action($hookName, $this->callbacks[$id]['callback'], $priority);
 	}
 
-	public function removeHookWithMethod($hookName, $classname, $methodName, $priority = 10): bool
+	public function removeHookWithMethod($hookName, $classname, $methodName, int $priority = 10): bool
 	{
 		$id =  "$hookName-method-$classname-$methodName-$priority";
 		return array_key_exists($id, $this->callbacks) && remove_filter($hookName, $this->callbacks[$id]['callback'],
@@ -79,11 +86,20 @@ class HookRegistry {
 	}
 
 
-	public function removeHookWithFunction(string $hookName, string $functionName, $priority = 10)
+	public function removeHookWithFunction(string $hookName, string $functionName, int $priority = 10)
 	{
 		$id = "$hookName-func-$functionName-$priority";
 		return array_key_exists($id, $this->callbacks) && remove_filter($hookName, $this->callbacks[$id]['callback'],
 				$priority);
 	}
 
+	public function removeHookById($id)
+	{
+		if (!isset($this->callbacks[$id])) {
+			return false;
+		}
+
+		$data = $this->callbacks[$id];
+		return remove_filter($data['hookName'], $data['callback'], $data['priority']);
+	}
 }
