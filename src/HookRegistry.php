@@ -54,14 +54,21 @@ class HookRegistry {
 		return add_action($hookName, $this->callbacks[$id]['callback'], $priority);
 	}
 
-	public function addWithMethod($hookName, $className, $methodName, int $priority = 10, ?string $id = null)
+	public function addWithMethod($hookName, $className, $methodName, int $priority = 10, ?string $id = null, ?callable $gateKeeper = null)
 	{
 		$id = $id ?? "$hookName-method-$className-$methodName-$priority";
 		$this->callbacks[$id] = [
-			'callback' => function() use($className, $methodName) {
+			'callback' => function() use($className, $methodName, $gateKeeper) {
+				$args = func_get_args();
+
+				if ($gateKeeper) {
+					$result = call_user_func_array($gateKeeper, $args);
+					if (!$result) {
+						return;
+					}
+				}
 				$class_instance = $this->container->get( $className );
 
-				$args = func_get_args();
 				$closure = function() use ($methodName, $args) {
 					call_user_func_array([$this, $methodName], $args);
 				};

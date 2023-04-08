@@ -47,6 +47,24 @@ class HookRegistryTest extends TestCase
 		$this->assertEmpty($output);
 	}
 
+	/**
+	 * When the gatekeeper method returns false;
+	 * the main callback should not run.
+	 *
+	 * @return void
+	 */
+	public function test_addWithMethod_gateKeeper()
+	{
+		$this->hook->addWithMethod("test-method", DummyClass::class, "publicMethod", 10, null, function() {
+			return false;
+		});
+		ob_start();
+		do_action("test-method", "iAmPublicMethod");
+		$output = ob_get_contents();
+		ob_end_clean();
+		$this->assertEmpty($output);
+	}
+
 	public function test_addWithMethod_private()
 	{
 		$this->hook->addWithMethod("test-method", DummyClass::class, "privateMethod");
