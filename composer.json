@@ -2,7 +2,11 @@
     "name": "moon0326/wp-hook-registry",
     "autoload": {
         "psr-4": {
-            "Moon\\WpHookRegistry\\": "src/",
+            "Moon\\WpHookRegistry\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "Moon\\WpHookRegistryTests\\": "tests/"
         }
     },
