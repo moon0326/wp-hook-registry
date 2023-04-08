@@ -22,7 +22,7 @@ class RegisterFromArrayTest extends TestCase
 		global $wp_mocks_hooks;
 		$wp_mocks_hooks = [];
 		$hookRegistry = new HookRegistry(new TestContainer());
-	    new RegisterFromArray($hookRegistry, $this->arrayConfig);
+	    	new RegisterFromArray($hookRegistry, $this->arrayConfig);
 
 		$this->assertArrayHasKey('init', $wp_mocks_hooks);
 		$this->assertArrayHasKey(9, $wp_mocks_hooks['init']);
