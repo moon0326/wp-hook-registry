@@ -11,7 +11,7 @@ class HookRegistryTest extends TestCase
 {
 	public function setUp(): void
 	{
-	    parent::setUp();
+		parent::setUp();
 		$this->hook = new HookRegistry(new TestContainer());
 	}
 
@@ -71,7 +71,7 @@ class HookRegistryTest extends TestCase
 
 	public function test_removeHookWithMethod()
 	{
-	    $hookName = 'test-remove-method';
+		$hookName = 'test-remove-method';
 		$this->hook->addWithMethod($hookName, DummyClass::class, 'publicMethod');
 		$this->hook->removeHookWithMethod($hookName, DummyClass::class, 'publicMethod');
 		do_action($hookName, "iShouldNotEcho");
