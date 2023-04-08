@@ -35,18 +35,6 @@ class HookRegistryTest extends TestCase
 		$this->assertEquals('iAmPublicMethod', $output);
 	}
 
-	public function test_addWithMethod_id()
-	{
-		$id = 'you-can-assign-an-id';
-		$this->hook->addWithMethod("test-method", DummyClass::class, "publicMethod", 10, $id);
-		$this->hook->removeHookById($id);
-		ob_start();
-		do_action("test-method", "iAmPublicMethod");
-		$output = ob_get_contents();
-		ob_end_clean();
-		$this->assertEmpty($output);
-	}
-
 	/**
 	 * When the gatekeeper method returns false;
 	 * the main callback should not run.
@@ -94,6 +82,19 @@ class HookRegistryTest extends TestCase
 		$this->hook->removeHookWithMethod($hookName, DummyClass::class, 'publicMethod');
 		do_action($hookName, "iShouldNotEcho");
 		ob_start();
+		$output = ob_get_contents();
+		ob_end_clean();
+		$this->assertEmpty($output);
+	}
+
+
+	public function test_remove_by_id()
+	{
+		$id = 'you-can-assign-an-id';
+		$this->hook->addWithMethod("test-method", DummyClass::class, "publicMethod", 10, $id);
+		$this->hook->removeHookById($id);
+		ob_start();
+		do_action("test-method", "iAmPublicMethod");
 		$output = ob_get_contents();
 		ob_end_clean();
 		$this->assertEmpty($output);
